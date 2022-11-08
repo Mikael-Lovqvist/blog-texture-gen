@@ -207,7 +207,7 @@ class test_renderer(renderer):
 		self.frame_time = frame_time
 
 
-		brownian_noise_level = 0.01
+		brownian_noise_level = 0.001
 		#Brownian noise - for the lulz!
 		for i in range(self.rendering_settings.num_points):
 			point = self.rendering_settings.points[i]

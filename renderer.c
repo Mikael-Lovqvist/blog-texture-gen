@@ -19,13 +19,39 @@ void render_line(pixel_format frame[HEIGHT][WIDTH], int y, rendering_settings* r
 
 		float closest_distance = 0;
 		int closest_point = -1;
-		vec2 this_point = v2(
+
+		vec2 check_points[4];
+		vec2 main_point = v2(
 			(float)x / (float)(WIDTH-1),
 			(float)y / (float)(HEIGHT-1)
 		);
 
+		vec2 cp_offset;
+
+		//Check point 1
+		if ((main_point.x < 0.5) && (main_point.y < 0.5)) {	//Top left quadrant
+			cp_offset = v2(1, 1);
+		} else if ((main_point.x > 0.5) && (main_point.y < 0.5)) {	//Top right quadrant
+			cp_offset = v2(-1, 1);
+		} else if ((main_point.x < 0.5) && (main_point.y > 0.5)) {	//Bottom left quadrant
+			cp_offset = v2(1, -1);
+		} else {	//Bottom right quadrant
+			cp_offset = v2(-1, -1);
+		}
+
+		check_points[0] = main_point;
+		check_points[1] = v2(main_point.x + cp_offset.x, main_point.y);
+		check_points[2] = v2(main_point.x, main_point.y + cp_offset.y);
+		check_points[3] = v2(main_point.x + cp_offset.x, main_point.y + cp_offset.y);
+
+
 		for (int i=0; i<rs->num_points; i++) {
-			float this_distance = magn_v2(sub_v2_v2(this_point, rs->points[i].position));
+
+			float this_distance = magn_v2(sub_v2_v2(check_points[0], rs->points[i].position));
+			for (int cp=1; cp<4; cp++) {
+				float distance_candidate = magn_v2(sub_v2_v2(check_points[cp], rs->points[i].position));
+				this_distance = min(this_distance, distance_candidate);
+			}
 
 			if ((closest_point == -1) || (this_distance < closest_distance)) {
 				closest_point = i;
