@@ -1,6 +1,8 @@
 #include "math.c"
 #include "colors.c"
 
+//For future reference: https://openexr.readthedocs.io/en/latest/OpenEXRCoreAPI.html
+
 typedef struct rendering_point {
 	vec2 position;
 	float weight;
@@ -101,6 +103,9 @@ void render_line(pixel_format frame[HEIGHT][WIDTH], int y, rendering_settings* r
 		check_points[2] = v2(main_point.x, main_point.y + cp_offset.y);
 		check_points[3] = v2(main_point.x + cp_offset.x, main_point.y + cp_offset.y);
 
+		double influence_radius = 0.25;	// 1.0 is entire texture (sqrt(2))
+		double gain=100000;
+		double bias=0.5;
 
 		double cumulative_weight = 0;
 
@@ -112,13 +117,14 @@ void render_line(pixel_format frame[HEIGHT][WIDTH], int y, rendering_settings* r
 				this_distance = min(this_distance, distance_candidate);
 			}
 
-			cumulative_weight += pow(1.0 - ((double)this_distance / sqrt(2)), 25) / (double) (WIDTH * HEIGHT) ;
+			cumulative_weight += pow(max(0, influence_radius - ((double)this_distance / sqrt(2))), 1) * rs->points[i].weight / (double) (WIDTH * HEIGHT) ;
 
 		}
 
-		double gain=100000;
 
-		row[x] = frgb(cumulative_weight*50*gain, cumulative_weight*10*gain, cumulative_weight*5*gain);
+
+		//row[x] = frgb(bias+cumulative_weight*50*gain, bias+cumulative_weight*10*gain, bias+cumulative_weight*5*gain);
+		row[x] = frgb(bias+cumulative_weight*gain, bias+cumulative_weight*gain, bias+cumulative_weight*gain);
 
 	}
 

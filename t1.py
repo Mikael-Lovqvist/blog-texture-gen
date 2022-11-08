@@ -10,8 +10,10 @@ import ctypes
 # w = 2048
 # h = 1152
 
-w = 1024
-h = 1024
+w = 512
+h = 512
+num_points = 250
+
 
 
 INFINITE = object()
@@ -182,7 +184,6 @@ class test_renderer(renderer):
 
 
 		#Create some random points
-		num_points = 50
 		point_data = (rendering_point * num_points)()	#Create type and initialize
 
 		#Fill in data for the points
