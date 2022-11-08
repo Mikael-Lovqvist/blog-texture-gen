@@ -1,5 +1,5 @@
-#This experiment is about optimizing the ray marching so that we can skip sub cubes from the outside in
-from efforting.tech.qt.widgets.image_viewer_window import viewer_window, QImage, Qt, QSize
+#This experiment is about texture generation
+from image_viewer_window import viewer_window, QImage, Qt, QSize
 import random
 import time, math, os, subprocess
 from PySide2.QtWidgets import QApplication
@@ -202,10 +202,17 @@ class test_renderer(renderer):
 
 
 
-
 	def begin_frame(self, frame_time):
 		self.current_buffer = next(self.render_buffer_pool)
 		self.frame_time = frame_time
+
+
+		brownian_noise_level = 0.01
+		#Brownian noise - for the lulz!
+		for i in range(self.rendering_settings.num_points):
+			point = self.rendering_settings.points[i]
+			point.position.x = (point.position.x + random.uniform(-brownian_noise_level, brownian_noise_level)) % 1.0
+			point.position.y = (point.position.y + random.uniform(-brownian_noise_level, brownian_noise_level)) % 1.0
 
 
 	def end_frame(self):
